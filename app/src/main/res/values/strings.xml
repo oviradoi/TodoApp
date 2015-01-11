@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">TodoApp</string>
+    <string name="typeHereHint">Type here</string>
+    <string name="btnAddText">Add</string>
+    <string name="newList">New list</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="exportNotes">Export notes</string>
+    <string name="importNotes">Import notes</string>
+</resources>
