@@ -31,6 +31,7 @@ public class TodosCursorAdapter extends CursorAdapter
     private LayoutInflater inflater;
     private ListView mListView;
     private TodoActivityDrawer mActivity;
+    private boolean detailsMode = false;
 
     public TodosCursorAdapter(TodoActivityDrawer activity, Cursor cursor, int flags)
     {
@@ -52,39 +53,59 @@ public class TodosCursorAdapter extends CursorAdapter
         return todonote;
     }
 
+    public void setDetailsMode(boolean detailsMode){
+        this.detailsMode = detailsMode;
+    }
+
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = inflater.inflate(R.layout.chkview, parent, false);
+        View view = null;
         TodosViewHolder vh = new TodosViewHolder();
-        vh.txtView1 = (TextView)view.findViewById(android.R.id.text1);
-        vh.txtView2 = (TextView)view.findViewById(android.R.id.text2);
-        vh.chkView = (CheckBox)view.findViewById(android.R.id.checkbox);
+
+        if (detailsMode) {
+            view = inflater.inflate(R.layout.chkview, parent, false);
+            vh.txtView1 = (TextView) view.findViewById(android.R.id.text1);
+            vh.txtView2 = (TextView) view.findViewById(android.R.id.text2);
+            vh.chkView = (CheckBox) view.findViewById(android.R.id.checkbox);
+        } else {
+            view = inflater.inflate(R.layout.chkview_short, parent, false);
+            vh.txtView1 = (TextView) view.findViewById(android.R.id.text1);
+            vh.txtView2 = null;
+            vh.chkView = (CheckBox) view.findViewById(android.R.id.checkbox);
+        }
+
         view.setTag(vh);
         return view;
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TodosViewHolder holder = (TodosViewHolder)view.getTag();
+        TodosViewHolder holder = (TodosViewHolder) view.getTag();
         TodoNote todonote = TodosDataSource.noteFromCursor(cursor);
         holder.txtView1.setText(todonote.getText());
-        if (todonote.isChecked()) {
-            holder.txtView2.setText("Done "+SimpleDateFormat.getDateTimeInstance()
-                    .format(todonote.getDoneDate()));
-        } else {
-            holder.txtView2.setText("Created "+SimpleDateFormat.getDateTimeInstance()
-                    .format(todonote.getCreatedDate()));
+        if (holder.txtView2 != null) {
+            if (todonote.isChecked()) {
+                holder.txtView2.setText("Done " + SimpleDateFormat.getDateTimeInstance()
+                        .format(todonote.getDoneDate()));
+            } else {
+                holder.txtView2.setText("Created " + SimpleDateFormat.getDateTimeInstance()
+                        .format(todonote.getCreatedDate()));
+            }
         }
         holder.chkView.setChecked(todonote.isChecked());
         holder.chkView.setOnClickListener(mOnCheckboxClickListener);
         if (todonote.isChecked()) {
             holder.txtView1.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG | holder.txtView1.getPaintFlags());
             holder.txtView1.setTextColor(Color.GRAY);
-            holder.txtView2.setTextColor(Color.GRAY);
+            if (holder.txtView2 != null) {
+                holder.txtView2.setTextColor(Color.GRAY);
+            }
         } else {
             holder.txtView1.setPaintFlags(~Paint.STRIKE_THRU_TEXT_FLAG & holder.txtView1.getPaintFlags());
             holder.txtView1.setTextColor(Color.BLACK);
-            holder.txtView2.setTextColor(Color.BLACK);
+            if (holder.txtView2 != null) {
+                holder.txtView2.setTextColor(Color.BLACK);
+            }
         }
     }
 

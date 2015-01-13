@@ -46,12 +46,15 @@ public class TodoActivityDrawer extends ListActivity implements
 	private static final int LOADER_LISTS = 0;
 	private static final int LOADER_TODOS = 1;
 
+    private boolean detailsMode = false;
+
 	// UI controls
 	private TodosCursorAdapter adapter;
 	private Button btnAdd;
 	private TodoDrawerFragment mNavigationDrawerFragment;
 	private ListView lstTodos;
 	private EditText txtAdd;
+    private MenuItem mnuDetailsBtn;
 	
 	private TodosViewModel viewModel;
 
@@ -191,6 +194,8 @@ public class TodoActivityDrawer extends ListActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		if (!mNavigationDrawerFragment.isDrawerOpen()) {
 			getMenuInflater().inflate(R.menu.main, menu);
+            mnuDetailsBtn = menu.findItem(R.id.action_details);
+            mnuDetailsBtn.setIcon(detailsMode ? R.drawable.nodetails : R.drawable.details);
 			restoreActionBar();
 			return true;
 		}
@@ -218,8 +223,15 @@ public class TodoActivityDrawer extends ListActivity implements
 			viewModel.exportNotes();
 			return true;
 		} else if (menuItem.getItemId() == R.id.action_import) {
-			viewModel.importNotes();
-			return true;
+            viewModel.importNotes();
+            return true;
+        } else if (menuItem.getItemId() == R.id.action_details){
+            detailsMode = !detailsMode;
+            mnuDetailsBtn.setIcon(detailsMode ? R.drawable.nodetails : R.drawable.details);
+            adapter.setDetailsMode(detailsMode);
+            getListView().setAdapter(getListView().getAdapter());
+            getLoaderManager().restartLoader(LOADER_TODOS, null, this);
+            return true;
 		} else {
 			return super.onOptionsItemSelected(menuItem);
 		}

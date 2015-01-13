@@ -15,4 +15,10 @@
         android:id="@+id/action_import"
         android:showAsAction="never"
         android:title="@string/importNotes"/>
+    <item
+        android:id="@+id/action_details"
+        android:showAsAction="ifRoom"
+        android:title="BigSmall"
+        android:icon="@drawable/details"
+        />
 </menu>
