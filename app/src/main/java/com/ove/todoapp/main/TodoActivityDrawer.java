@@ -343,10 +343,14 @@ public class TodoActivityDrawer extends ListActivity implements
 	// Called when the user wants to add a new todo note
 	private void onAdd() {
 		// The text of the item we want to add
-		String todoTxt = txtAdd.getText().toString();
-		if (!todoTxt.trim().isEmpty()) {
-			// Create the todo note
-			TodosDataSource.getDataSource().createTodo(todoTxt, selectedListId);
+		String todoTxt = txtAdd.getText().toString().trim();
+		if (!todoTxt.isEmpty()) {
+            // Split the string using comma, semicolon and newline as separators
+            String[] texts = todoTxt.split("[,;\\n]+");
+            for(String txt : texts){
+                // Create the todo note
+                TodosDataSource.getDataSource().createTodo(txt.trim(), selectedListId);
+            }
 			// Clear the edittext text
 			txtAdd.setText("");
 			txtAdd.clearFocus();
