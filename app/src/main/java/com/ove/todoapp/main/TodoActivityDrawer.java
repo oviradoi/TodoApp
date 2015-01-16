@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
@@ -46,6 +47,11 @@ public class TodoActivityDrawer extends ListActivity implements
 	private static final int LOADER_LISTS = 0;
 	private static final int LOADER_TODOS = 1;
 
+    private static final String PREFERENCES = "TodoAppPreferences";
+    private static final String PREF_DETAILSMODE = "DetailsMode";
+
+    private SharedPreferences sharedPrefs;
+
     private boolean detailsMode = false;
 
 	// UI controls
@@ -75,8 +81,13 @@ public class TodoActivityDrawer extends ListActivity implements
 		// Fixes loader bug on orientation changed
 		getLoaderManager();
 
+        // Initialize preferences
+        sharedPrefs = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
+        detailsMode = sharedPrefs.getBoolean(PREF_DETAILSMODE, true);
+
 		// Setup cursor adapter
 		adapter = new TodosCursorAdapter(this, null, 0);
+        adapter.setDetailsMode(detailsMode);
 		setListAdapter(adapter);
 
 		// Initialize the UI extras
@@ -231,6 +242,12 @@ public class TodoActivityDrawer extends ListActivity implements
             adapter.setDetailsMode(detailsMode);
             getListView().setAdapter(getListView().getAdapter());
             getLoaderManager().restartLoader(LOADER_TODOS, null, this);
+
+            // Store details mode in shared preferences
+            SharedPreferences.Editor editor = sharedPrefs.edit();
+            editor.putBoolean(PREF_DETAILSMODE, detailsMode);
+            editor.commit();
+
             return true;
 		} else {
 			return super.onOptionsItemSelected(menuItem);
