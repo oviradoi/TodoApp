@@ -15,6 +15,7 @@ import android.content.DialogInterface;
 import android.os.Environment;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class TodosViewModel {
 
@@ -100,24 +101,39 @@ public class TodosViewModel {
 						.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 				File file = new File(downloadsDir, "export.xml");
 				TodosDataSource.getDataSource().importDatabase(file);
+                Toast successToast = Toast.makeText(context, "Database imported from "+file.getAbsolutePath(), Toast.LENGTH_SHORT);
+                successToast.show();
 			} catch (Exception ex) {
+                Toast errorToast = Toast.makeText(context, "Error while importing", Toast.LENGTH_SHORT);
+                errorToast.show();
 				ex.printStackTrace();
 			}
 		}
+        else{
+            Toast errorToast = Toast.makeText(context, "External storage is not writable", Toast.LENGTH_SHORT);
+            errorToast.show();
+        }
 	}
 	
-	public void exportNotes(){
-		if (isExternalStorageWritable()) {
-			try {
-				File downloadsDir = Environment
-						.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-				File file = new File(downloadsDir, "export.xml");
-				TodosDataSource.getDataSource().exportDatabase(file);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-	}
+	public void exportNotes() {
+        if (isExternalStorageWritable()) {
+            try {
+                File downloadsDir = Environment
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                File file = new File(downloadsDir, "export.xml");
+                TodosDataSource.getDataSource().exportDatabase(file);
+                Toast successToast = Toast.makeText(context, "Database exported to " + file.getAbsolutePath(), Toast.LENGTH_SHORT);
+                successToast.show();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Toast errorToast = Toast.makeText(context, "Error exporting database", Toast.LENGTH_SHORT);
+                errorToast.show();
+            }
+        } else {
+            Toast errorToast = Toast.makeText(context, "External storage is not writable", Toast.LENGTH_SHORT);
+            errorToast.show();
+        }
+    }
 
 	// Checks if external storage is available for read and write
 	private boolean isExternalStorageWritable() {
