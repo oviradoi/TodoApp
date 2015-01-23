@@ -89,17 +89,6 @@ public class TodoDrawerFragment extends ListFragment implements OnItemLongClickL
         return super.onOptionsItemSelected(item);
     }
 
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-	    // If the drawer is open, show the global app actions in the action bar. See also
-	    // showGlobalContextActionBar, which controls the top-left area of the action bar.
-	    if (mDrawerLayout != null && isDrawerOpen()) {
-	        inflater.inflate(R.menu.main, menu);
-	        showGlobalContextActionBar();
-	    }
-	    super.onCreateOptionsMenu(menu, inflater);
-	}
-
 	public void selectPosition(int pos) {
 		if (adapter != null) {
 			int count = adapter.getCount();
