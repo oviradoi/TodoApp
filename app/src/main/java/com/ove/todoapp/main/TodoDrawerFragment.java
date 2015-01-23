@@ -1,16 +1,17 @@
 package com.ove.todoapp.main;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ListFragment;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.app.ListFragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -59,7 +60,7 @@ public class TodoDrawerFragment extends ListFragment implements OnItemLongClickL
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		callbackReceiver = (TodoDrawerCallbacks)activity;
-	};
+	}
 	
     @Override
     public void onDetach() {
@@ -133,19 +134,17 @@ public class TodoDrawerFragment extends ListFragment implements OnItemLongClickL
         mDrawerLayout = drawerLayout;
         
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        
-        ActionBar actionBar = getActivity().getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
-        
+
+        getActivityActionBar().setDisplayHomeAsUpEnabled(true);
+        getActivityActionBar().setHomeButtonEnabled(true);
+
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the navigation drawer and the action bar app icon.
         mDrawerToggle = new ActionBarDrawerToggle(
-                getActivity(),                    /* host Activity */
-                mDrawerLayout,                    /* DrawerLayout object */
-                R.drawable.ic_drawer,             /* nav drawer image to replace 'Up' caret */
-                R.string.navigation_drawer_open,  /* "open drawer" description for accessibility */
-                R.string.navigation_drawer_close  /* "close drawer" description for accessibility */
+                getActivity(),                    // host Activity
+                mDrawerLayout,                    // DrawerLayout object
+                R.string.navigation_drawer_open,  // "open drawer" description for accessibility
+                R.string.navigation_drawer_close  // "close drawer" description for accessibility
         ) {
             @Override
             public void onDrawerClosed(View drawerView) {
@@ -183,10 +182,8 @@ public class TodoDrawerFragment extends ListFragment implements OnItemLongClickL
     }
 	
     private void showGlobalContextActionBar() {
-        ActionBar actionBar = getActivity().getActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setTitle(R.string.app_name);
+        getActivityActionBar().setDisplayShowTitleEnabled(true);
+        getActivityActionBar().setTitle(R.string.app_name);
     }
     
 	public void renameList(int position) {
@@ -285,4 +282,12 @@ public class TodoDrawerFragment extends ListFragment implements OnItemLongClickL
 		
 		return false;
 	}
+
+    private ActionBar getActivityActionBar(){
+        ActionBarActivity activity = (ActionBarActivity)getActivity();
+        if(activity!=null){
+            return activity.getSupportActionBar();
+        }
+        return null;
+    }
 }

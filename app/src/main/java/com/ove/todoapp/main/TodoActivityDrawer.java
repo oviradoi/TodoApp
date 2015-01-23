@@ -2,9 +2,7 @@ package com.ove.todoapp.main;
 
 import java.lang.reflect.Field;
 
-import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
@@ -14,6 +12,8 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -37,7 +37,7 @@ import com.ove.todoapp.adapters.TodosCursorAdapter;
 import com.ove.todoapp.db.TodosDataSource;
 import com.ove.todoapp.viewmodels.TodosViewModel;
 
-public class TodoActivityDrawer extends ListActivity implements
+public class TodoActivityDrawer extends ActionBarActivity implements
 		AdapterView.OnItemClickListener,
 		AdapterView.OnItemLongClickListener,
 		AbsListView.OnScrollListener,
@@ -88,7 +88,7 @@ public class TodoActivityDrawer extends ListActivity implements
 		// Setup cursor adapter
 		adapter = new TodosCursorAdapter(this, null, 0);
         adapter.setDetailsMode(detailsMode);
-		setListAdapter(adapter);
+		lstTodos.setAdapter(adapter);
 
 		// Initialize the UI extras
 		initializeUIExtras();
@@ -146,8 +146,8 @@ public class TodoActivityDrawer extends ListActivity implements
 		});
 
 		// Setup the drawer fragment
-		mNavigationDrawerFragment = (TodoDrawerFragment) getFragmentManager().findFragmentById(
-				R.id.navigation_drawer);
+		mNavigationDrawerFragment = (TodoDrawerFragment) getSupportFragmentManager().findFragmentById(
+                R.id.navigation_drawer);
 		mNavigationDrawerFragment.setCallbackReceiver(this);
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
@@ -203,15 +203,12 @@ public class TodoActivityDrawer extends ListActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		if (!mNavigationDrawerFragment.isDrawerOpen()) {
-			getMenuInflater().inflate(R.menu.main, menu);
-            mnuDetailsBtn = menu.findItem(R.id.action_details);
-            mnuDetailsBtn.setIcon(detailsMode ? R.drawable.nodetails : R.drawable.details);
-			restoreActionBar();
-			return true;
-		}
-		return super.onCreateOptionsMenu(menu);
-	}
+        getMenuInflater().inflate(R.menu.main, menu);
+        mnuDetailsBtn = menu.findItem(R.id.action_details);
+        mnuDetailsBtn.setIcon(detailsMode ? R.drawable.nodetails : R.drawable.details);
+        restoreActionBar();
+        return true;
+    }
 
 	@Override
 	public void onItemClick(AdapterView<?> adapterview, View view, int i, long l) {
@@ -240,7 +237,7 @@ public class TodoActivityDrawer extends ListActivity implements
             detailsMode = !detailsMode;
             mnuDetailsBtn.setIcon(detailsMode ? R.drawable.nodetails : R.drawable.details);
             adapter.setDetailsMode(detailsMode);
-            getListView().setAdapter(getListView().getAdapter());
+            lstTodos.setAdapter(lstTodos.getAdapter());
             getLoaderManager().restartLoader(LOADER_TODOS, null, this);
 
             // Store details mode in shared preferences
@@ -386,8 +383,7 @@ public class TodoActivityDrawer extends ListActivity implements
 	}
 
 	private void restoreActionBar() {
-		ActionBar actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayShowTitleEnabled(true);
 	}
 }

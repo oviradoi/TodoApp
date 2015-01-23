@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.ove.todoapp.TodoDrawerActivity" >
 
     <item
         android:id="@+id/action_addList"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/newList"/>
     <item
         android:id="@+id/action_export"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/exportNotes"/>
     <item
         android:id="@+id/action_import"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/importNotes"/>
     <item
         android:id="@+id/action_details"
-        android:showAsAction="ifRoom"
+        app:showAsAction="ifRoom"
         android:title="BigSmall"
         android:icon="@drawable/details"
         />
