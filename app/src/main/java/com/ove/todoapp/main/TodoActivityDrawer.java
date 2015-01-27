@@ -14,6 +14,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -144,6 +145,12 @@ public class TodoActivityDrawer extends ActionBarActivity implements
 				onAdd();
 			}
 		});
+
+        // Use the new Toolbar as an action bar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
 
 		// Setup the drawer fragment
 		mNavigationDrawerFragment = (TodoDrawerFragment) getSupportFragmentManager().findFragmentById(
