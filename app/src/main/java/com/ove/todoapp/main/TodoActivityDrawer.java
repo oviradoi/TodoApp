@@ -38,6 +38,10 @@ import com.ove.todoapp.adapters.TodosCursorAdapter;
 import com.ove.todoapp.db.TodosDataSource;
 import com.ove.todoapp.viewmodels.TodosViewModel;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class TodoActivityDrawer extends ActionBarActivity implements
 		AdapterView.OnItemClickListener,
 		AdapterView.OnItemLongClickListener,
@@ -57,10 +61,10 @@ public class TodoActivityDrawer extends ActionBarActivity implements
 
 	// UI controls
 	private TodosCursorAdapter adapter;
-	private Button btnAdd;
 	private TodoDrawerFragment mNavigationDrawerFragment;
-	private ListView lstTodos;
-	private EditText txtAdd;
+	@Bind(R.id.add) Button btnAdd;
+	@Bind(android.R.id.list) ListView lstTodos;
+	@Bind(android.R.id.edit) EditText txtAdd;
     private MenuItem mnuDetailsBtn;
 	
 	private TodosViewModel viewModel;
@@ -133,18 +137,7 @@ public class TodoActivityDrawer extends ActionBarActivity implements
 	private void initializeUI() {
 		// Load the content view
 		setContentView(R.layout.activity_todo_drawer);
-
-		// Get the controls
-		txtAdd = (EditText) findViewById(android.R.id.edit);
-		lstTodos = (ListView) findViewById(android.R.id.list);
-		btnAdd = (Button) findViewById(R.id.add);
-		
-		btnAdd.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				onAdd();
-			}
-		});
+		ButterKnife.bind(this);
 
         // Use the new Toolbar as an action bar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -362,7 +355,8 @@ public class TodoActivityDrawer extends ActionBarActivity implements
 	}
 
 	// Called when the user wants to add a new todo note
-	private void onAdd() {
+	@OnClick(R.id.add)
+	void onAdd() {
 		// The text of the item we want to add
 		String todoTxt = txtAdd.getText().toString().trim();
 		if (!todoTxt.isEmpty()) {
