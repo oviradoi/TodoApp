@@ -12,6 +12,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -273,7 +274,7 @@ public class TodoDrawerFragment extends ListFragment implements OnItemLongClickL
 	}
 
     private ActionBar getActivityActionBar(){
-        ActionBarActivity activity = (ActionBarActivity)getActivity();
+		AppCompatActivity activity = (AppCompatActivity)getActivity();
         if(activity!=null){
             return activity.getSupportActionBar();
         }

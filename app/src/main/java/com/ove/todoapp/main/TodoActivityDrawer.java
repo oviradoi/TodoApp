@@ -2,7 +2,6 @@ package com.ove.todoapp.main;
 
 import java.lang.reflect.Field;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
@@ -13,7 +12,8 @@ import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -21,7 +21,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewConfiguration;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
@@ -42,7 +41,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class TodoActivityDrawer extends ActionBarActivity implements
+public class TodoActivityDrawer extends AppCompatActivity implements
 		AdapterView.OnItemClickListener,
 		AdapterView.OnItemLongClickListener,
 		AbsListView.OnScrollListener,

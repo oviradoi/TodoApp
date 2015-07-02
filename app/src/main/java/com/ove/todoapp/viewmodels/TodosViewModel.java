@@ -8,11 +8,11 @@ import com.ove.todoapp.db.TodosDataSource;
 import com.ove.todoapp.utils.SimpleOnClickListener;
 import com.ove.todoapp.utils.SimpleTextWatcher;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
