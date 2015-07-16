@@ -8,6 +8,8 @@
         android:layout_width="0dp"
         android:layout_height="?android:attr/listPreferredItemHeight"
         android:layout_weight="1"
+        android:id="@+id/list_item"
+        android:background="?android:attr/selectableItemBackground"
         android:orientation="vertical" >
 
         <TextView
@@ -16,6 +18,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="?android:attr/listPreferredItemPaddingLeft"
             android:layout_marginTop="8dip"
+            android:clickable="false"
+            android:focusable="false"
             android:textAppearance="?android:attr/textAppearanceListItem" >
         </TextView>
 
@@ -25,6 +29,8 @@
             android:layout_height="wrap_content"
             android:layout_alignStart="@android:id/text1"
             android:layout_below="@android:id/text1"
+            android:clickable="false"
+            android:focusable="false"
             android:textAppearance="?android:attr/textAppearanceSmall" >
         </TextView>
     </RelativeLayout>

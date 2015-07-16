@@ -113,7 +113,7 @@ public class TodosCursorAdapter extends CursorAdapter
         @Override
         public void onClick(View v) {
             final int position = mListView.getPositionForView((View) v.getParent());
-            mActivity.onCheckboxClick(position);
+            mActivity.onCheckboxClick(null);
         }
     };
 } 

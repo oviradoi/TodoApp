@@ -14,6 +14,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,17 +25,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.ove.todoapp.R;
+import com.ove.todoapp.adapters.TodosCursorAdapter2;
 import com.ove.todoapp.common.TodoNote;
-import com.ove.todoapp.adapters.TodosCursorAdapter;
 import com.ove.todoapp.db.TodosDataSource;
 import com.ove.todoapp.viewmodels.TodosViewModel;
 
@@ -42,9 +41,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class TodoActivityDrawer extends AppCompatActivity implements
-		AdapterView.OnItemClickListener,
-		AdapterView.OnItemLongClickListener,
-		AbsListView.OnScrollListener,
 		android.app.LoaderManager.LoaderCallbacks<Cursor>, TodoDrawerFragment.TodoDrawerCallbacks,
 		TodosDataSource.DataChangeListener {
 
@@ -59,10 +55,10 @@ public class TodoActivityDrawer extends AppCompatActivity implements
     private boolean detailsMode = false;
 
 	// UI controls
-	private TodosCursorAdapter adapter;
+	private TodosCursorAdapter2 adapter;
 	private TodoDrawerFragment mNavigationDrawerFragment;
 	@Bind(R.id.add) Button btnAdd;
-	@Bind(android.R.id.list) ListView lstTodos;
+	@Bind(android.R.id.list) RecyclerView lstTodos;
 	@Bind(android.R.id.edit) EditText txtAdd;
     private MenuItem mnuDetailsBtn;
 	
@@ -90,8 +86,9 @@ public class TodoActivityDrawer extends AppCompatActivity implements
         detailsMode = sharedPrefs.getBoolean(PREF_DETAILSMODE, true);
 
 		// Setup cursor adapter
-		adapter = new TodosCursorAdapter(this, null, 0);
-        adapter.setDetailsMode(detailsMode);
+		//adapter = new TodosCursorAdapter(this, null, 0);
+        //adapter.setDetailsMode(detailsMode);
+		adapter = new TodosCursorAdapter2(this, null);
 		lstTodos.setAdapter(adapter);
 
 		// Initialize the UI extras
@@ -99,9 +96,12 @@ public class TodoActivityDrawer extends AppCompatActivity implements
 
 		// Set list listeners
 		if (lstTodos != null) {
-			// lstTodos.setOnItemClickListener(this);
-			lstTodos.setOnItemLongClickListener(this);
-			lstTodos.setOnScrollListener(this);
+			lstTodos.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    hideSoftKeyboard();
+                }
+            });
 		}
 	}
 
@@ -138,6 +138,8 @@ public class TodoActivityDrawer extends AppCompatActivity implements
 		setContentView(R.layout.activity_todo_drawer);
 		ButterKnife.bind(this);
 
+        lstTodos.setLayoutManager(new LinearLayoutManager(this));
+
         // Use the new Toolbar as an action bar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -149,7 +151,7 @@ public class TodoActivityDrawer extends AppCompatActivity implements
                 R.id.navigation_drawer);
 		mNavigationDrawerFragment.setCallbackReceiver(this);
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
-				(DrawerLayout) findViewById(R.id.drawer_layout));
+                (DrawerLayout) findViewById(R.id.drawer_layout));
 
 		// Set the drawer shadow
 		DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -170,34 +172,34 @@ public class TodoActivityDrawer extends AppCompatActivity implements
 	private void initializeUIExtras() {
 		// This shows/hides the Add button
 		txtAdd.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void onTextChanged(CharSequence str, int s, int b, int c) {
-				int visibility = str.length() > 0 ? View.VISIBLE : View.GONE;
-				btnAdd.setVisibility(visibility);
-			}
+            @Override
+            public void onTextChanged(CharSequence str, int s, int b, int c) {
+                int visibility = str.length() > 0 ? View.VISIBLE : View.GONE;
+                btnAdd.setVisibility(visibility);
+            }
 
-			@Override
-			public void beforeTextChanged(CharSequence str, int s, int c, int a) {
-			}
+            @Override
+            public void beforeTextChanged(CharSequence str, int s, int c, int a) {
+            }
 
-			@Override
-			public void afterTextChanged(Editable s) {
-			}
-		});
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
 		txtAdd.setText(txtAdd.getText());
 
 		// This sets the IME action label for the soft keyboard
 		txtAdd.setImeActionLabel("Add", 100);
 		txtAdd.setOnEditorActionListener(new OnEditorActionListener() {
-			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				if (actionId == 100) {
-					onAdd();
-					return true;
-				}
-				return false;
-			}
-		});
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == 100) {
+                    onAdd();
+                    return true;
+                }
+                return false;
+            }
+        });
 	}
 
 	@Override
@@ -209,16 +211,27 @@ public class TodoActivityDrawer extends AppCompatActivity implements
         return true;
     }
 
-	@Override
-	public void onItemClick(AdapterView<?> adapterview, View view, int i, long l) {
-		// TodoNote todonote = adapter.getTodoNote(i);
-		// TodosDataSource.getDataSource().setChecked(todonote,
-		// !todonote.isChecked());
+	public void onCheckboxClick(TodoNote note) {
+		TodosDataSource.getDataSource().setChecked(note, !note.isChecked());
 	}
 
-	public void onCheckboxClick(int position) {
-		TodoNote todonote = adapter.getTodoNote(position);
-		TodosDataSource.getDataSource().setChecked(todonote, !todonote.isChecked());
+	public void onLongClick(final TodoNote note){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Edit item").setItems(new String[] { "Rename", "Delete" },
+                new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == 0) {
+                            // Rename
+                            viewModel.renameNote(note);
+                        } else if (which == 1) {
+                            // Delete
+                            viewModel.deleteNote(note);
+                        }
+                    }
+                });
+        builder.create().show();
 	}
 
 	@Override
@@ -235,7 +248,7 @@ public class TodoActivityDrawer extends AppCompatActivity implements
         } else if (menuItem.getItemId() == R.id.action_details){
             detailsMode = !detailsMode;
             mnuDetailsBtn.setIcon(detailsMode ? R.drawable.nodetails : R.drawable.details);
-            adapter.setDetailsMode(detailsMode);
+//            adapter.setDetailsMode(detailsMode);
             lstTodos.setAdapter(lstTodos.getAdapter());
             getLoaderManager().restartLoader(LOADER_TODOS, null, this);
 
@@ -255,7 +268,7 @@ public class TodoActivityDrawer extends AppCompatActivity implements
 		switch (loaderid) {
 		case LOADER_LISTS:
 			return new CursorLoader(this) {
-				public Cursor loadInBackground() {
+				@Override public Cursor loadInBackground() {
 					return TodosDataSource.getDataSource().getListsCursor();
 				}
 			};
@@ -287,7 +300,7 @@ public class TodoActivityDrawer extends AppCompatActivity implements
 			btnAdd.setEnabled(selectedListId > 0);
 			txtAdd.setEnabled(selectedListId > 0);
 		} else if (loaderId == LOADER_TODOS) {
-			adapter.swapCursor(cursor);
+			adapter.changeCursor(cursor);
 		}
 	}
 
@@ -299,7 +312,7 @@ public class TodoActivityDrawer extends AppCompatActivity implements
 			btnAdd.setEnabled(false);
 			txtAdd.setEnabled(false);
 		} else if (loaderId == LOADER_TODOS) {
-			adapter.swapCursor(null);
+			adapter.changeCursor(null);
 		}
 	}
 
@@ -318,44 +331,10 @@ public class TodoActivityDrawer extends AppCompatActivity implements
 		}
 	}
 
-	@Override
-	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-		final TodoNote note = adapter.getTodoNote(position);
-	
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Edit item").setItems(new String[] { "Rename", "Delete" },
-				new DialogInterface.OnClickListener() {
-	
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						if (which == 0) {
-							// Rename
-							viewModel.renameNote(note);
-						} else if (which == 1) {
-							// Delete
-							viewModel.deleteNote(note);
-						}
-					}
-				});
-		builder.create().show();
-	
-		return true;
-	}
-
-	@Override
-	public void onScrollStateChanged(AbsListView abslistview, int i) {
-		// Hide the soft keyboard when scrolling the list
-		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(btnAdd.getWindowToken(), 0);
-	}
-
-	@Override
-	public void onScroll(AbsListView abslistview, int i, int j, int k) {
-	}
-
 	// Called when the user wants to add a new todo note
 	@OnClick(R.id.add)
 	void onAdd() {
+
 		// The text of the item we want to add
 		String todoTxt = txtAdd.getText().toString().trim();
 		if (!todoTxt.isEmpty()) {
@@ -369,18 +348,22 @@ public class TodoActivityDrawer extends AppCompatActivity implements
 			txtAdd.setText("");
 			txtAdd.clearFocus();
 			// Hide the soft keyboard
-			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(btnAdd.getWindowToken(), 0);
+			hideSoftKeyboard();
 			// Select the new todo item, this scrolls the list
-			final int position = adapter.getCount() - 1;
+			final int position = adapter.getItemCount();
 			lstTodos.post(new Runnable() {
 				@Override
 				public void run() {
-					lstTodos.setSelection(position);
+                    lstTodos.scrollToPosition(position);
 				}
 			});
 		}
 	}
+
+    private void hideSoftKeyboard(){
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(btnAdd.getWindowToken(), 0);
+    }
 
 	private void restoreActionBar() {
 		ActionBar actionBar = getSupportActionBar();
